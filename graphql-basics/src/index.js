@@ -3,31 +3,64 @@ import { GraphQLServer } from "graphql-yoga";
 // Type definition (schema)
 const typeDefs = `
     type Query {
+      greeting(name: String, position: String): String!
+      me: User!
+      post: Post!
+      add(numbers: [Float!]!): Float
+      grades: [Int!]!
+    }
+
+    type User {
         id: ID!
         name: String!
-        age: Int!
-        employed: Boolean!
-        gpa: Float
+        email: String!
+        age: Int
+    }
+
+    type Post {
+        id: ID!
+        title: String!
+        body: String!
+        published: Boolean!
     }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    id() {
-      return "abc123";
+    greeting(parent, args, ctx, info) {
+      if (args.name && args.position) {
+        return `Hello ${args.name}! You are my favorite ${args.position}.`;
+      } else {
+        return "Hello";
+      }
     },
-    name() {
-      return "Deyvid";
+    add(parant, args) {
+      if (args.numbers.length == 0) {
+        return 0;
+      }
+
+      return args.numbers.reduce((acumulator, currentValue) => {
+        return acumulator + currentValue;
+      });
     },
-    age() {
-      return 34;
+    grades(parent, args, ctx, info) {
+      return [99, 80, 93];
     },
-    employed() {
-      return true;
+    me() {
+      return {
+        id: "12345",
+        name: "Deyvid",
+        email: "deyvidyury@gmail.com"
+      };
     },
-    gpa() {
-      return null;
+    post() {
+      return {
+        id: "1234556",
+        title: "Post one",
+        body: "This is the post one",
+        published: true
+      };
     }
   }
 };
