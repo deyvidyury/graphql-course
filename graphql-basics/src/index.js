@@ -2,16 +2,34 @@ import { GraphQLServer } from "graphql-yoga";
 
 // Demo user data
 const users = [
-    {id: '1', name: 'deyvid', email: 'deyvidyury@gmail.com', age: 34},
-    {id: '2', name: 'sara', email: 'sara@gmail.com', age: 24},
-    {id: '3', name: 'Mike', email: 'mike@gmail.com', age: 14}
-]
+  { id: "1", name: "deyvid", email: "deyvidyury@gmail.com", age: 34 },
+  { id: "2", name: "sara", email: "sara@gmail.com", age: 24 },
+  { id: "3", name: "Mike", email: "mike@gmail.com", age: 14 }
+];
 
 const posts = [
-    {id: '1', title: 'Post One', body: 'This is post one', published: true},
-    {id: '2', title: 'Post Two', body: 'This is post two', published: false},
-    {id: '3', title: 'Post Three', body: 'This is post three', published: true}
-]
+  {
+    id: "1",
+    title: "Post One",
+    body: "This is post one",
+    published: true,
+    author: "1"
+  },
+  {
+    id: "2",
+    title: "Post Two",
+    body: "This is post two",
+    published: false,
+    author: "1"
+  },
+  {
+    id: "3",
+    title: "Post Three",
+    body: "This is post three",
+    published: true,
+    author: "2"
+  }
+];
 
 // Type definition (schema)
 const typeDefs = `
@@ -34,6 +52,7 @@ const typeDefs = `
         title: String!
         body: String!
         published: Boolean!
+        author: Post!
     }
 `;
 
@@ -55,23 +74,33 @@ const resolvers = {
         published: true
       };
     },
-    users (parent, args, ctc, info) {
-        if (!args.query) {
-            return users
-        }
+    users(parent, args, ctc, info) {
+      if (!args.query) {
+        return users;
+      }
 
-        return users.filter((user) => {
-            return user.name.toLowerCase().includes(args.query.toLowerCase())
-        })
+      return users.filter(user => {
+        return user.name.toLowerCase().includes(args.query.toLowerCase());
+      });
     },
-    posts (parent, args, ctx, info) {
-        if (!args.query) {
-            return posts
-        }
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts;
+      }
 
-        return posts.filter((post) => {
-            return (post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase()))
-        })
+      return posts.filter(post => {
+        return (
+          post.title.toLowerCase().includes(args.query.toLowerCase()) ||
+          post.body.toLowerCase().includes(args.query.toLowerCase())
+        );
+      });
+    }
+  },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find(user => {
+        return user.id === parent.author;
+      });
     }
   }
 };
